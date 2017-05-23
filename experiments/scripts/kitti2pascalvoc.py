@@ -250,7 +250,7 @@ if __name__ == '__main__':
             for obj in objs:
                 cls = obj['class']
                 allclasses[cls] = 0 \
-                    if not cls in allclasses.keys() else allclasses[cls] + 1
+                    if not cls in list(allclasses.keys()) else allclasses[cls] + 1
 
             for cls in cls_in_image:
                 if cls in class_sets:
@@ -265,9 +265,9 @@ if __name__ == '__main__':
         (f.close() for f in fs)
         ftrain.close()
 
-        print '~~~~~~~~~~~~~~~~~~~'
-        print allclasses
-        print '~~~~~~~~~~~~~~~~~~~'
+        print('~~~~~~~~~~~~~~~~~~~')
+        print(allclasses)
+        print('~~~~~~~~~~~~~~~~~~~')
         shutil.copyfile(os.path.join(_dest_set_dir, 'train.txt'), os.path.join(_dest_set_dir, 'val.txt'))
         shutil.copyfile(os.path.join(_dest_set_dir, 'train.txt'), os.path.join(_dest_set_dir, 'trainval.txt'))
         for cls in class_sets:

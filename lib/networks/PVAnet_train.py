@@ -147,15 +147,15 @@ class PVAnet_train(Network):
     def load(self, data_path, session, ignore_missing=False):
         data_dict = np.load(data_path).item()
         # print (data_dict.keys())
-        for key in sorted(data_dict.keys(), reverse=True):
+        for key in sorted(list(data_dict.keys()), reverse=True):
             with tf.variable_scope(key, reuse=True):
                 for subkey in data_dict[key]:
                     try:
                         var = tf.get_variable(subkey)
                         session.run(var.assign(data_dict[key][subkey]))
-                        print "assign pretrain model " + subkey + " to " + key + '/' + subkey
+                        print("assign pretrain model " + subkey + " to " + key + '/' + subkey)
                     except ValueError:
-                        print "ignore " + key + '/' + subkey + ' shape:', data_dict[key][subkey].shape
+                        print("ignore " + key + '/' + subkey + ' shape:', data_dict[key][subkey].shape)
                         if not ignore_missing:
 
                             raise

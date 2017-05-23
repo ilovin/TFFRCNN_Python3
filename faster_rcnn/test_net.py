@@ -68,7 +68,7 @@ if __name__ == '__main__':
     pprint.pprint(cfg)
 
     while not os.path.exists(args.model) and args.wait:
-        print('Waiting for {} to exist...'.format(args.model))
+        print(('Waiting for {} to exist...'.format(args.model)))
         time.sleep(1000)
 
     weights_filename = os.path.splitext(os.path.basename(args.model))[0]
@@ -77,10 +77,10 @@ if __name__ == '__main__':
     imdb.competition_mode(args.comp_mode)
 
     device_name = '/gpu:{:d}'.format(args.gpu_id)
-    print device_name
+    print(device_name)
 
     network = get_network(args.network_name)
-    print 'Use network `{:s}` in training'.format(args.network_name)
+    print(('Use network `{:s}` in training'.format(args.network_name)))
 
     cfg.GPU_ID = args.gpu_id
 
@@ -88,6 +88,6 @@ if __name__ == '__main__':
     saver = tf.train.Saver()
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
     saver.restore(sess, args.model)
-    print ('Loading model weights from {:s}').format(args.model)
+    print((('Loading model weights from {:s}').format(args.model)))
 
     test_net(sess, network, imdb, weights_filename)

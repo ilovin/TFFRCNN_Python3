@@ -6,8 +6,13 @@ import argparse
 import os.path as osp
 import glob
 
+
 this_dir = osp.dirname(__file__)
 print(this_dir)
+#with open('../environ.txt') as f:
+#     l = f.readline()
+#     proPath = re.match(r'.*\'(.*)\'',l).group(1)
+#     sys.path.append(proPath)
 
 from lib.networks.factory import get_network
 from lib.fast_rcnn.config import cfg
@@ -66,8 +71,8 @@ def demo(sess, net, image_name):
     timer.tic()
     scores, boxes = im_detect(sess, net, im)
     timer.toc()
-    print ('Detection took {:.3f}s for '
-           '{:d} object proposals').format(timer.total_time, boxes.shape[0])
+    print(('Detection took {:.3f}s for '
+           '{:d} object proposals').format(timer.total_time, boxes.shape[0]))
 
     # Visualize detections for each class
     im = im[:, :, (2, 1, 0)]
@@ -111,7 +116,7 @@ if __name__ == '__main__':
     args = parse_args()
 
     if args.model == ' ' or not os.path.exists(args.model):
-        print ('current path is ' + os.path.abspath(__file__))
+        print(('current path is ' + os.path.abspath(__file__)))
         raise IOError(('Error: Model not found.\n'))
 
     # init session
@@ -119,22 +124,22 @@ if __name__ == '__main__':
     # load network
     net = get_network(args.demo_net)
     # load model
-    print ('Loading network {:s}... '.format(args.demo_net)),
+    print(('Loading network {:s}... '.format(args.demo_net)), end=' ')
     saver = tf.train.Saver()
     saver.restore(sess, args.model)
     print (' done.')
 
     # Warmup on a dummy image
     im = 128 * np.ones((300, 300, 3), dtype=np.uint8)
-    for i in xrange(2):
+    for i in range(2):
         _, _ = im_detect(sess, net, im)
 
     im_names = glob.glob(os.path.join(cfg.DATA_DIR, 'demo', '*.png')) + \
                glob.glob(os.path.join(cfg.DATA_DIR, 'demo', '*.jpg'))
 
     for im_name in im_names:
-        print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-        print 'Demo for {:s}'.format(im_name)
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print('Demo for {:s}'.format(im_name))
         demo(sess, net, im_name)
 
     plt.show()

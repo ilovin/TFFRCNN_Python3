@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 import cv2
-import cPickle
+import pickle
 import heapq
 import os
 import math
@@ -125,7 +125,7 @@ def _clip_boxes(boxes, im_shape):
 def _rescale_boxes(boxes, inds, scales):
     """Rescale boxes according to image rescaling."""
 
-    for i in xrange(boxes.shape[0]):
+    for i in range(boxes.shape[0]):
         boxes[i,:] = boxes[i,:] / scales[int(inds[i])]
 
     return boxes
@@ -205,7 +205,7 @@ def vis_detections(im, class_name, dets, thresh=0.8):
     """Visual debugging of detections."""
     import matplotlib.pyplot as plt 
     #im = im[:, :, (2, 1, 0)]
-    for i in xrange(np.minimum(10, dets.shape[0])):
+    for i in range(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4] 
         score = dets[i, -1] 
         if score > thresh:
@@ -231,10 +231,10 @@ def apply_nms(all_boxes, thresh):
     """
     num_classes = len(all_boxes)
     num_images = len(all_boxes[0])
-    nms_boxes = [[[] for _ in xrange(num_images)]
-                 for _ in xrange(num_classes)]
-    for cls_ind in xrange(num_classes):
-        for im_ind in xrange(num_images):
+    nms_boxes = [[[] for _ in range(num_images)]
+                 for _ in range(num_classes)]
+    for cls_ind in range(num_classes):
+        for im_ind in range(num_images):
             dets = all_boxes[cls_ind][im_ind]
             if dets == []:
                 continue
@@ -262,8 +262,8 @@ def test_net(sess, net, imdb, weights_filename , max_per_image=300, thresh=0.05,
     # all detections are collected into:
     #    all_boxes[cls][image] = N x 5 array of detections in
     #    (x1, y1, x2, y2, score)
-    all_boxes = [[[] for _ in xrange(num_images)]
-                 for _ in xrange(imdb.num_classes)]
+    all_boxes = [[[] for _ in range(num_images)]
+                 for _ in range(imdb.num_classes)]
 
     output_dir = get_output_dir(imdb, weights_filename)
     # timers
@@ -277,7 +277,7 @@ def test_net(sess, net, imdb, weights_filename , max_per_image=300, thresh=0.05,
     #     with open(det_file, 'rb') as f:
     #         all_boxes = cPickle.load(f)
 
-    for i in xrange(num_images):
+    for i in range(num_images):
         # filter out any ground truth boxes
         if cfg.TEST.HAS_RPN:
             box_proposals = None
@@ -301,7 +301,7 @@ def test_net(sess, net, imdb, weights_filename , max_per_image=300, thresh=0.05,
             plt.imshow(image)
 
         # skip j = 0, because it's the background class
-        for j in xrange(1, imdb.num_classes):
+        for j in range(1, imdb.num_classes):
             inds = np.where(scores[:, j] > thresh)[0]
             cls_scores = scores[inds, j]
             cls_boxes = boxes[inds, j*4:(j+1)*4]
@@ -317,21 +317,21 @@ def test_net(sess, net, imdb, weights_filename , max_per_image=300, thresh=0.05,
         # Limit to max_per_image detections *over all classes*
         if max_per_image > 0:
             image_scores = np.hstack([all_boxes[j][i][:, -1]
-                                      for j in xrange(1, imdb.num_classes)])
+                                      for j in range(1, imdb.num_classes)])
             if len(image_scores) > max_per_image:
                 image_thresh = np.sort(image_scores)[-max_per_image]
-                for j in xrange(1, imdb.num_classes):
+                for j in range(1, imdb.num_classes):
                     keep = np.where(all_boxes[j][i][:, -1] >= image_thresh)[0]
                     all_boxes[j][i] = all_boxes[j][i][keep, :]
         nms_time = _t['misc'].toc(average=False)
 
-        print 'im_detect: {:d}/{:d} {:.3f}s {:.3f}s' \
-              .format(i + 1, num_images, detect_time, nms_time)
+        print('im_detect: {:d}/{:d} {:.3f}s {:.3f}s' \
+              .format(i + 1, num_images, detect_time, nms_time))
 
 
     with open(det_file, 'wb') as f:
-        cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
+        pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)
 
-    print 'Evaluating detections'
+    print('Evaluating detections')
     imdb.evaluate_detections(all_boxes, output_dir)
 

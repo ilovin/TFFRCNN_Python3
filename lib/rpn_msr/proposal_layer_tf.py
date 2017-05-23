@@ -63,6 +63,7 @@ def proposal_layer(rpn_cls_prob_reshape, rpn_bbox_pred, im_info, cfg_key, _feat_
     #rpn_bbox_pred = np.transpose(rpn_bbox_pred,[0,3,2,1])
     im_info = im_info[0]
 
+    cfg_key = cfg_key.decode('ascii')
     assert rpn_cls_prob_reshape.shape[0] == 1, \
         'Only single item batches are supported'
     # cfg_key = str(self.phase) # either 'TRAIN' or 'TEST'
@@ -88,12 +89,12 @@ def proposal_layer(rpn_cls_prob_reshape, rpn_bbox_pred, im_info, cfg_key, _feat_
     #im_info = bottom[2].data[0, :]
 
     if DEBUG:
-        print 'im_size: ({}, {})'.format(im_info[0], im_info[1])
-        print 'scale: {}'.format(im_info[2])
+        print('im_size: ({}, {})'.format(im_info[0], im_info[1]))
+        print('scale: {}'.format(im_info[2]))
 
     # 1. Generate proposals from bbox deltas and shifted anchors
     if DEBUG:
-        print 'score map size: {}'.format(scores.shape)
+        print('score map size: {}'.format(scores.shape))
 
     # Enumerate all shifts
     shift_x = np.arange(0, width) * _feat_stride

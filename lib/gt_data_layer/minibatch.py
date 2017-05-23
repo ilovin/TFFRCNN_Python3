@@ -31,7 +31,7 @@ def get_minibatch(roidb, num_classes):
     # build the box information blob
     info_boxes_blob = np.zeros((0, 18), dtype=np.float32)
     num_scale = len(cfg.TRAIN.SCALES)
-    for i in xrange(num_images):
+    for i in range(num_images):
         info_boxes = roidb[i]['info_boxes']
 
         # change the batch index
@@ -66,7 +66,7 @@ def _get_image_blob(roidb):
     num_images = len(roidb)
     processed_ims = []
 
-    for i in xrange(num_images):
+    for i in range(num_images):
         # read image
         im = cv2.imread(roidb[i]['image'])
         if roidb[i]['flipped']:
@@ -120,7 +120,7 @@ def _get_bbox_regression_labels(bbox_target_data, num_classes):
 def _vis_minibatch(im_blob, rois_blob, labels_blob, sublabels_blob):
     """Visualize a mini-batch for debugging."""
     import matplotlib.pyplot as plt
-    for i in xrange(rois_blob.shape[0]):
+    for i in range(rois_blob.shape[0]):
         rois = rois_blob[i, :]
         im_ind = rois[0]
         roi = rois[2:]
@@ -131,7 +131,7 @@ def _vis_minibatch(im_blob, rois_blob, labels_blob, sublabels_blob):
         cls = labels_blob[i]
         subcls = sublabels_blob[i]
         plt.imshow(im)
-        print 'class: ', cls, ' subclass: ', subcls
+        print('class: ', cls, ' subclass: ', subcls)
         plt.gca().add_patch(
             plt.Rectangle((roi[0], roi[1]), roi[2] - roi[0],
                           roi[3] - roi[1], fill=False,

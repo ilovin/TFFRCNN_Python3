@@ -4,5 +4,5 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick
 # --------------------------------------------------------
-import roi_pooling_op
-import roi_pooling_op_grad
+from . import roi_pooling_op
+from . import roi_pooling_op_grad

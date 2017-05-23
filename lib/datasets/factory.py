@@ -39,7 +39,7 @@ for year in ['2007', '2012', '0712']:
 # Set up kittivoc
     for split in ['train', 'val', 'trainval', 'test']:
         name = 'kittivoc_{}'.format(split)
-        print name
+        print(name)
         __sets[name] = (lambda split=split: kittivoc(split))
 
 # # KITTI dataset
@@ -63,17 +63,17 @@ for year in ['2015']:
 # NTHU dataset
 for split in ['71', '370']:
     name = 'nthu_{}'.format(split)
-    print name
+    print(name)
     __sets[name] = (lambda split=split: nthu(split))
 
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
-    if not __sets.has_key(name):
-        print (list_imdbs())
+    if name not in __sets:
+        print((list_imdbs()))
         raise KeyError('Unknown dataset: {}'.format(name))
     return __sets[name]()
 
 def list_imdbs():
     """List all registered imdbs."""
-    return __sets.keys()
+    return list(__sets.keys())

@@ -39,10 +39,10 @@ class SolverWrapper(object):
         self.output_dir = output_dir
         self.pretrained_model = pretrained_model
 
-        print 'Computing bounding-box regression targets...'
+        print('Computing bounding-box regression targets...')
         if cfg.TRAIN.BBOX_REG:
             self.bbox_means, self.bbox_stds = rdl_roidb.add_bbox_regression_targets(roidb)
-        print 'done'
+        print('done')
 
         # For checkpoint
         self.saver = tf.train.Saver(max_to_keep=100)
@@ -56,7 +56,7 @@ class SolverWrapper(object):
         """
         net = self.net
 
-        if cfg.TRAIN.BBOX_REG and net.layers.has_key('bbox_pred') and cfg.TRAIN.BBOX_NORMALIZE_TARGETS:
+        if cfg.TRAIN.BBOX_REG and 'bbox_pred' in net.layers and cfg.TRAIN.BBOX_NORMALIZE_TARGETS:
             # save original values
             with tf.variable_scope('bbox_pred', reuse=True):
                 weights = tf.get_variable("weights")
@@ -80,9 +80,9 @@ class SolverWrapper(object):
         filename = os.path.join(self.output_dir, filename)
 
         self.saver.save(sess, filename)
-        print 'Wrote snapshot to: {:s}'.format(filename)
+        print('Wrote snapshot to: {:s}'.format(filename))
 
-        if cfg.TRAIN.BBOX_REG and net.layers.has_key('bbox_pred'):
+        if cfg.TRAIN.BBOX_REG and 'bbox_pred' in net.layers:
             # restore net to original state
             sess.run(weights.assign(orig_0))
             sess.run(biases.assign(orig_1))
@@ -140,7 +140,7 @@ class SolverWrapper(object):
         if with_clip:
             tvars = tf.trainable_variables()
             grads, norm = tf.clip_by_global_norm(tf.gradients(loss, tvars), 10.0)
-            train_op = opt.apply_gradients(zip(grads, tvars), global_step=global_step)
+            train_op = opt.apply_gradients(list(zip(grads, tvars)), global_step=global_step)
         else:
             train_op = opt.minimize(loss, global_step=global_step)
 
@@ -151,8 +151,8 @@ class SolverWrapper(object):
         # load vgg16
         if self.pretrained_model is not None and not restore:
             try:
-                print ('Loading pretrained model '
-                   'weights from {:s}').format(self.pretrained_model)
+                print(('Loading pretrained model '
+                   'weights from {:s}').format(self.pretrained_model))
                 self.net.load(self.pretrained_model, sess, True)
             except:
                 raise 'Check your pretrained model {:s}'.format(self.pretrained_model)
@@ -161,12 +161,12 @@ class SolverWrapper(object):
         if restore:
             try:
                 ckpt = tf.train.get_checkpoint_state(self.output_dir)
-                print 'Restoring from {}...'.format(ckpt.model_checkpoint_path),
+                print('Restoring from {}...'.format(ckpt.model_checkpoint_path), end=' ')
                 self.saver.restore(sess, ckpt.model_checkpoint_path)
                 stem = os.path.splitext(os.path.basename(ckpt.model_checkpoint_path))[0]
                 restore_iter = int(stem.split('_')[-1])
                 sess.run(global_step.assign(restore_iter))
-                print 'done'
+                print('done')
             except:
                 raise 'Check your pretrained {:s}'.format(ckpt.model_checkpoint_path)
 
@@ -185,7 +185,7 @@ class SolverWrapper(object):
             blobs = data_layer.forward()
 
             if (iter + 1) % (cfg.TRAIN.DISPLAY) == 0:
-                print 'image: %s' %(blobs['im_name']),
+                print('image: %s' %(blobs['im_name']), end=' ')
 
             feed_dict={
                 self.net.data: blobs['data'],
@@ -281,10 +281,10 @@ class SolverWrapper(object):
                 self.writer.add_summary(log_image_summary_op, global_step=global_step.eval())
 
             if (iter) % (cfg.TRAIN.DISPLAY) == 0:
-                print 'iter: %d / %d, total loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, loss_cls: %.4f, loss_box: %.4f, lr: %f'%\
+                print('iter: %d / %d, total loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, loss_cls: %.4f, loss_box: %.4f, lr: %f'%\
                         (iter, max_iters, rpn_loss_cls_value + rpn_loss_box_value + loss_cls_value + loss_box_value ,\
-                         rpn_loss_cls_value, rpn_loss_box_value,loss_cls_value, loss_box_value, lr.eval())
-                print 'speed: {:.3f}s / iter'.format(_diff_time)
+                         rpn_loss_cls_value, rpn_loss_box_value,loss_cls_value, loss_box_value, lr.eval()))
+                print('speed: {:.3f}s / iter'.format(_diff_time))
 
             if (iter+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
                 last_snapshot_iter = iter
@@ -296,11 +296,11 @@ class SolverWrapper(object):
 def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
     if cfg.TRAIN.USE_FLIPPED:
-        print 'Appending horizontally-flipped training examples...'
+        print('Appending horizontally-flipped training examples...')
         imdb.append_flipped_images()
-        print 'done'
+        print('done')
 
-    print 'Preparing training data...'
+    print('Preparing training data...')
     if cfg.TRAIN.HAS_RPN:
         if cfg.IS_MULTISCALE:
             # TODO: fix multiscale training (single scale is already a good trade-off)
@@ -311,7 +311,7 @@ def get_training_roidb(imdb):
             rdl_roidb.prepare_roidb(imdb)
     else:
         rdl_roidb.prepare_roidb(imdb)
-    print 'done'
+    print('done')
 
     return imdb.roidb
 
@@ -396,6 +396,6 @@ def train_net(network, imdb, roidb, output_dir, log_dir, pretrained_model=None, 
     config.gpu_options.per_process_gpu_memory_fraction = 0.40
     with tf.Session(config=config) as sess:
         sw = SolverWrapper(sess, network, imdb, roidb, output_dir, logdir= log_dir, pretrained_model=pretrained_model)
-        print 'Solving...'
+        print('Solving...')
         sw.train_model(sess, max_iters, restore=restore)
-        print 'done solving'
+        print('done solving')

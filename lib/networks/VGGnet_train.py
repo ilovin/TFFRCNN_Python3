@@ -1,5 +1,5 @@
 import tensorflow as tf
-from network import Network
+from .network import Network
 from ..fast_rcnn.config import cfg
 
 class VGGnet_train(Network):
