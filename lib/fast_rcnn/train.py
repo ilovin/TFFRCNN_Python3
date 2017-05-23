@@ -153,22 +153,24 @@ class SolverWrapper(object):
             try:
                 print(('Loading pretrained model '
                    'weights from {:s}').format(self.pretrained_model))
+                #self.saver.restore(sess,self.pretrained_model)
                 self.net.load(self.pretrained_model, sess, True)
             except:
-                raise 'Check your pretrained model {:s}'.format(self.pretrained_model)
+                raise Exception('Check your pretrained model {:s}'.format(self.pretrained_model))
 
         # resuming a trainer
         if restore:
             try:
                 ckpt = tf.train.get_checkpoint_state(self.output_dir)
                 print('Restoring from {}...'.format(ckpt.model_checkpoint_path), end=' ')
-                self.saver.restore(sess, ckpt.model_checkpoint_path)
+                #self.saver.restore(sess, ckpt.model_checkpoint_path)
+                self.saver.restore(sess, tf.train.latest_checkpoint(self.output_dir))
                 stem = os.path.splitext(os.path.basename(ckpt.model_checkpoint_path))[0]
                 restore_iter = int(stem.split('_')[-1])
                 sess.run(global_step.assign(restore_iter))
                 print('done')
             except:
-                raise 'Check your pretrained {:s}'.format(ckpt.model_checkpoint_path)
+                raise Exception('Check your pretrained {:s}'.format(ckpt.model_checkpoint_path))
 
         last_snapshot_iter = -1
         timer = Timer()
@@ -322,7 +324,7 @@ def get_data_layer(roidb, num_classes):
         if cfg.IS_MULTISCALE:
             # obsolete
             # layer = GtDataLayer(roidb)
-            raise "Calling caffe modules..."
+            raise Exception("Calling caffe modules...")
         else:
             layer = RoIDataLayer(roidb, num_classes)
     else:
@@ -393,7 +395,7 @@ def train_net(network, imdb, roidb, output_dir, log_dir, pretrained_model=None, 
 
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allocator_type = 'BFC'
-    config.gpu_options.per_process_gpu_memory_fraction = 0.40
+    #config.gpu_options.per_process_gpu_memory_fraction = 0.40
     with tf.Session(config=config) as sess:
         sw = SolverWrapper(sess, network, imdb, roidb, output_dir, logdir= log_dir, pretrained_model=pretrained_model)
         print('Solving...')

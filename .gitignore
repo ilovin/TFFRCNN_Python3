@@ -7,6 +7,7 @@
 *.out
 *.tar.gz
 *.so
+*.zip
 experiments/logs/*
 experiments/eval/*
 data/cache/*
