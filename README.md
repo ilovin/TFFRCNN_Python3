@@ -58,6 +58,7 @@ cd $TFFRCNN
 python ./faster_rcnn/demo.py --model model_path
 ```
 The demo performs detection using a VGG16 network trained for detection on PASCAL VOC 2007.
+, where model_path`can be download below
 
 ### Download list
 

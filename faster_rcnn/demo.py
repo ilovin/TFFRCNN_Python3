@@ -126,7 +126,12 @@ if __name__ == '__main__':
     # load model
     print(('Loading network {:s}... '.format(args.demo_net)), end=' ')
     saver = tf.train.Saver()
-    saver.restore(sess, args.model)
+    ckpt = tf.train.latest_checkpoint(args.model)
+    if ckpt:
+        # the global_step will restore sa well
+        saver.restore(sess,ckpt)
+        print('restore from the checkpoint{0}'.format(ckpt))
+    #saver.restore(sess, args.model)
     print (' done.')
 
     # Warmup on a dummy image
