@@ -38,11 +38,17 @@ For details about R-CNN please refer to the paper [Faster R-CNN: Towards Real-Ti
 ### Installation (sufficient for the demo)
 
 1. Clone the Faster R-CNN repository
-  ```Shell
-  git clone https://github.com/CharlesShang/TFFRCNN.git
-  ```
-
-2. Build the Cython modules
+    ```Shell
+    git clone https://github.com/ilovin/TFFRCNN_Python3.git
+    ```
+2. setup
+    ```Shell
+    cd ./lib
+    python setup.py build
+    cd ./lib/build
+    cp *so to nms and utils folder
+    ```
+3. Build the Cython modules
     ```Shell
     cd TFFRCNN/lib
     make # compile cython and roi_pooling_op, you may need to modify make.sh for your platform
